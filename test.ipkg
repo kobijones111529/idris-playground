@@ -1,0 +1,12 @@
+package test
+version = 0.0.1
+authors = "Kobi Jones"
+
+depends = contrib
+        , indexed
+        , linear
+        , ncurses-idris
+
+main = Main
+executable = "test"
+sourcedir = "src"

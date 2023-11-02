@@ -1,0 +1,11 @@
+package test-test
+version = 0.0.1
+authors = "Kobi Jones"
+
+depends = test
+
+modules = Lib
+
+main = Main
+executable = "test-test"
+sourcedir = "src"
