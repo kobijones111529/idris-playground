@@ -2,6 +2,8 @@ module Data.RedBlackTree
 
 import public Control.Order.Strict
 import Data.RedBlackTree.Core
+import Data.RedBlackTree.Elem
+import Data.RedBlackTree.Ops
 import public Decidable.Equality
 
 %default total
@@ -17,6 +19,12 @@ export
 export
 empty : StrictLinearOrder k rel => BinarySearchTree k rel
 empty = Root MkLeaf
+
+export
+lookup : StrictLinearOrder k rel => DecEq k => k -> BinarySearchTree k rel -> Bool
+lookup key (Root node) = case lookup key node of
+  Yes _ => True
+  No _ => False
 
 export
 insert : StrictLinearOrder k rel => DecEq k => k -> BinarySearchTree k rel -> BinarySearchTree k rel

@@ -12,7 +12,9 @@ main = do
     a = empty {rel = LT}
     b = insert 1 a
     c = insert 8 . insert 7 . insert 6 . insert 5 . insert 4 . insert 3 . insert 2 $ b
+    search : Nat := 8
   putStrLn . show @{ShowBST} $ c
+  putStrLn $ if lookup search c then "Found \{show search}" else "Didn't find \{show search}"
 
 -- main : IO ()
 -- main = do
