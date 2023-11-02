@@ -1,22 +1,9 @@
-module Data.RedBlackTree2
+module Data.RedBlackTree.Core
 
-import Control.Order.Strict
-import Decidable.Equality
+import public Control.Order.Strict
+import public Decidable.Equality
 
 %default total
-
-eqOrConnex :
-  (Connex ty rel, DecEq ty) =>
-  (x : ty) ->
-  (y : ty) ->
-  (dec : Dec (x = y) **
-    case dec of
-      Yes _ => ()
-      No _ => Either (rel x y) (rel y x)
-  )
-eqOrConnex x y = case x `decEq` y of
-  Yes eq => (Yes eq ** ())
-  No notEq => (No notEq ** connex {rel} notEq)
 
 public export
 data Bound ty = Bottom | Middle ty | Top
@@ -37,17 +24,16 @@ Transitive ty rel => Transitive (Bound ty) (BoundedRel {rel}) where
   transitive (LTEMiddle xy) (LTEMiddle yz) = LTEMiddle $ transitive xy yz
   transitive {x = Middle x} {z = Top} _ _ = LTETop
 
+public export
 data Color = Red | Black
 
+export
 Uninhabited (Red = Black) where
   uninhabited Refl impossible
 
+export
 Uninhabited (Black = Red) where
   uninhabited Refl impossible
-
-heightOf : Color -> Nat
-heightOf Red = 0
-heightOf Black = 1
 
 public export
 data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : Bound k) -> Type where
@@ -72,12 +58,14 @@ data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : Bound k
     (right : Node {rel} rightColor childHeight (Middle key) upper) ->
     Node {rel} Black (S childHeight) lower upper
 
+export
 redToBlack :
   StrictLinearOrder k rel =>
   Node {rel} Red height lower upper ->
   Node {rel} Black (S height) lower upper
 redToBlack (MkRedNode key left right) = MkBlackNode key left right
 
+export
 nodeBoundsRel : StrictLinearOrder k rel => Node {rel} color height lower upper -> BoundedRel {rel} lower upper
 nodeBoundsRel (MkLeaf {ltLowerUpper}) = ltLowerUpper
 nodeBoundsRel (MkRedNode key left right) =
@@ -85,25 +73,29 @@ nodeBoundsRel (MkRedNode key left right) =
 nodeBoundsRel (MkBlackNode key left right) =
   transitive (nodeBoundsRel left) (nodeBoundsRel right)
 
--- extendUpper :
---   StrictLinearOrder k rel =>
---   Node {rel} color height lower upper ->
---   {upper' : Bound k} ->
---   BoundedRel {rel} upper upper' ->
---   Node {rel} color height lower upper'
--- extendUpper (MkLeaf {ltLowerUpper}) ext = MkLeaf {ltLowerUpper = transitive ltLowerUpper ext}
--- extendUpper (MkRedNode key left right) ext = MkRedNode key left (extendUpper right ext)
--- extendUpper (MkBlackNode key left right) ext = MkBlackNode key left (extendUpper right ext)
+eqOrConnex :
+  (Connex ty rel, DecEq ty) =>
+  (x : ty) ->
+  (y : ty) ->
+  (dec : Dec (x = y) **
+    case dec of
+      Yes _ => ()
+      No _ => Either (rel x y) (rel y x)
+  )
+eqOrConnex x y = case x `decEq` y of
+  Yes eq => (Yes eq ** ())
+  No notEq => (No notEq ** connex {rel} notEq)
 
-insert' :
+export
+insert :
   (StrictLinearOrder k rel, DecEq k) =>
   (newKey : k) ->
   {auto ltLowerKey : BoundedRel {rel} lower (Middle newKey)} ->
   {auto ltKeyUpper : BoundedRel {rel} (Middle newKey) upper} ->
   Node {rel} Black height lower upper ->
   (color ** Node {rel} color height lower upper)
-insert' {ltKeyUpper} newKey MkLeaf = (Red ** MkRedNode newKey MkLeaf MkLeaf)
-insert'
+insert {ltKeyUpper} newKey MkLeaf = (Red ** MkRedNode newKey MkLeaf MkLeaf)
+insert
   {height = S childHeight}
   newKey
   (MkBlackNode {childHeight} {leftColor} {rightColor} key left right) =
@@ -114,7 +106,7 @@ insert'
         let MkRedNode leftKey leftLeft leftRight = left
         in case eqOrConnex {rel} newKey leftKey of
           (Yes _ ** ()) => (Black ** MkBlackNode key left right)
-          (No _ ** Left lt') => case insert' newKey leftLeft of
+          (No _ ** Left lt') => case insert newKey leftLeft of
             (Red ** leftLeft) => case rightColor of
               Red =>
                 (Red **
@@ -129,7 +121,7 @@ insert'
                 )
             (Black ** leftLeft) =>
               (Black ** MkBlackNode key (MkRedNode leftKey leftLeft leftRight) right)
-          (No _ ** Right gt') => case insert' newKey leftRight of
+          (No _ ** Right gt') => case insert newKey leftRight of
             (Red ** leftRight@(MkRedNode leftRightKey leftRightLeft leftRightRight)) => case rightColor of
               Red =>
                 (Red **
@@ -146,7 +138,7 @@ insert'
                     (MkRedNode key leftRightRight right)
                 )
             (Black ** leftRight) => (Black ** MkBlackNode key (MkRedNode leftKey leftLeft leftRight) right)
-      Black => case insert' newKey left of
+      Black => case insert newKey left of
         (Red ** left) => (Black ** MkBlackNode key left right)
         (Black ** left) => (Black ** MkBlackNode key left right)
     (No notEq ** Right gt) => case rightColor of
@@ -154,7 +146,7 @@ insert'
         let MkRedNode rightKey rightLeft rightRight = right
         in case eqOrConnex {rel} newKey rightKey of
           (Yes _ ** ()) => (Black ** MkBlackNode key left right)
-          (No _ ** Left lt') => case insert' newKey rightLeft of
+          (No _ ** Left lt') => case insert newKey rightLeft of
             (Red ** rightLeft@(MkRedNode rightLeftKey rightLeftLeft rightLeftRight)) => case leftColor of
               Red =>
                 (Red **
@@ -171,7 +163,7 @@ insert'
                     (MkRedNode rightKey rightLeftRight rightRight)
                 )
             (Black ** rightLeft) => (Black ** MkBlackNode key left (MkRedNode rightKey rightLeft rightRight))
-          (No _ ** Right gt') => case insert' newKey rightRight of
+          (No _ ** Right gt') => case insert newKey rightRight of
             (Red ** rightRight) => case leftColor of
               Red =>
                 (Red **
@@ -189,12 +181,14 @@ insert'
               (Black **
                 MkBlackNode key left (MkRedNode rightKey rightLeft rightRight)
               )
-      Black => case insert' newKey right of
+      Black => case insert newKey right of
         (Red ** right) => (Black ** MkBlackNode key left right)
         (Black ** right) => (Black ** MkBlackNode key left right)
 
 export
-[ShowNode] (StrictLinearOrder k rel, Show k) => Show (Node {rel} color height lower upper) where
+[ShowNode]
+  (StrictLinearOrder k rel, Show k) =>
+  Show (Node {rel} color height lower upper) where
   show MkLeaf = "[]"
   show (MkRedNode key MkLeaf MkLeaf) = "[\{show key}]"
   show (MkRedNode key MkLeaf right) = "[\{show key} \{show @{ShowNode} right}]"
@@ -204,25 +198,3 @@ export
   show (MkBlackNode key MkLeaf right) = "[\{show key} \{show @{ShowNode} right}]"
   show (MkBlackNode key left MkLeaf) = "[\{show @{ShowNode} left} \{show key}]"
   show (MkBlackNode key left right) = "[\{show @{ShowNode} left} \{show key} \{show @{ShowNode} right}]"
-
--- export
--- BinarySearchTree : (k : Type) -> (rel : Rel k) -> StrictLinearOrder k rel => Type
--- BinarySearchTree _ rel = Node {rel} Black height Bottom Top
-
-export
-data BinarySearchTree : (k : Type) -> (rel : Rel k) -> StrictLinearOrder k rel => Type where
-  Root : StrictLinearOrder k rel => {height : Nat} -> Node {rel} Black height Bottom Top -> BinarySearchTree k rel
-
-export
-[ShowBST] (StrictLinearOrder k rel, Show k) => Show (BinarySearchTree k rel) where
-  show (Root node) = show @{ShowNode} node
-
-export
-empty : StrictLinearOrder k rel => BinarySearchTree k rel
-empty = Root MkLeaf
-
-export
-insert : (StrictLinearOrder k rel, DecEq k) => k -> BinarySearchTree k rel -> BinarySearchTree k rel
-insert key (Root node) = case insert' key node of
-  (Red ** node) => Root $ redToBlack node
-  (Black ** node) => Root node

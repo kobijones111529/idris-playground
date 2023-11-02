@@ -2,7 +2,7 @@ module Main
 
 -- import Data.BinarySearchTree
 import Data.Nat.LT
-import Data.RedBlackTree2
+import Data.RedBlackTree
 import Decidable.Equality
 
 main : IO ()
