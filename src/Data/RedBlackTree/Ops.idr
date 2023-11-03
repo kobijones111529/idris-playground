@@ -9,6 +9,7 @@ export
 lookup :
   (StrictLinearOrder k rel, DecEq k) =>
   (key : k) ->
+  {lower, upper : Bound k} ->
   (node : Node {rel} color height lower upper) ->
   Dec (Elem key node)
 lookup key MkLeaf = No $ \case
@@ -51,11 +52,12 @@ export
 insert :
   (StrictLinearOrder k rel, DecEq k) =>
   (newKey : k) ->
+  {0 lower, upper : Bound k} ->
   {auto ltLowerKey : BoundedRel {rel} lower (Middle newKey)} ->
   {auto ltKeyUpper : BoundedRel {rel} (Middle newKey) upper} ->
   Node {rel} Black height lower upper ->
   (color ** Node {rel} color height lower upper)
-insert {ltKeyUpper} newKey MkLeaf = (Red ** MkRedNode newKey MkLeaf MkLeaf)
+insert newKey MkLeaf = (Red ** MkRedNode newKey MkLeaf MkLeaf)
 insert
   {height = S childHeight}
   newKey

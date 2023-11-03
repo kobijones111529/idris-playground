@@ -55,19 +55,19 @@ public export
 data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : Bound k) -> Type where
   MkLeaf :
     StrictLinearOrder k rel =>
-    {lower, upper : Bound k} ->
+    {0 lower, upper : Bound k} ->
     {auto ltLowerUpper : BoundedRel {rel} lower upper} ->
     Node {rel} Black Z lower upper
   MkRedNode :
     StrictLinearOrder k rel =>
-    {lower, upper : Bound k} ->
+    {0 lower, upper : Bound k} ->
     (key : k) ->
     (left : Node {rel} Black childHeight lower (Middle key)) ->
     (right : Node {rel} Black childHeight (Middle key) upper) ->
     Node {rel} Red childHeight lower upper
   MkBlackNode :
     StrictLinearOrder k rel =>
-    {lower, upper : Bound k} ->
+    {0 lower, upper : Bound k} ->
     (key : k) ->
     {leftColor, rightColor : Color} ->
     (left : Node {rel} leftColor childHeight lower (Middle key)) ->
@@ -82,7 +82,11 @@ redToBlack :
 redToBlack (MkRedNode key left right) = MkBlackNode key left right
 
 export
-nodeBoundsRel : StrictLinearOrder k rel => Node {rel} color height lower upper -> BoundedRel {rel} lower upper
+nodeBoundsRel :
+  StrictLinearOrder k rel =>
+  {lower, upper : Bound k} ->
+  Node {rel} color height lower upper ->
+  BoundedRel {rel} lower upper
 nodeBoundsRel (MkLeaf {ltLowerUpper}) = ltLowerUpper
 nodeBoundsRel (MkRedNode key left right) =
   transitive (nodeBoundsRel left) (nodeBoundsRel right)

@@ -10,42 +10,42 @@ public export
 data Elem : StrictLinearOrder k rel => k -> Node {rel} color height lower upper -> Type where
   ThisRed :
     StrictLinearOrder k rel =>
-    {key : k} ->
-    {left : Node {rel} Black childHeight lower (Middle key)} ->
-    {right : Node {rel} Black childHeight (Middle key) upper} ->
+    {0 key : k} ->
+    {0 left : Node {rel} Black childHeight lower (Middle key)} ->
+    {0 right : Node {rel} Black childHeight (Middle key) upper} ->
     Elem key (MkRedNode key left right)
   ThisBlack :
     StrictLinearOrder k rel =>
-    {key : k} ->
-    {left : Node {rel} leftColor childHeight lower (Middle key)} ->
-    {right : Node {rel} rightColor childHeight (Middle key) upper} ->
+    {0 key : k} ->
+    {0 left : Node {rel} leftColor childHeight lower (Middle key)} ->
+    {0 right : Node {rel} rightColor childHeight (Middle key) upper} ->
     Elem key (MkBlackNode key left right)
   InLeftOfRed :
     StrictLinearOrder k rel =>
-    {key : k} ->
-    {left : Node {rel} Black childHeight lower (Middle root)} ->
-    {right : Node {rel} Black childHeight (Middle root) upper} ->
+    {0 key : k} ->
+    {0 left : Node {rel} Black childHeight lower (Middle root)} ->
+    {0 right : Node {rel} Black childHeight (Middle root) upper} ->
     Elem key left ->
     Elem key (MkRedNode root left right)
   InLeftOfBlack :
     StrictLinearOrder k rel =>
-    {key : k} ->
-    {left : Node {rel} leftColor childHeight lower (Middle root)} ->
-    {right : Node {rel} rightColor childHeight (Middle root) upper} ->
+    {0 key : k} ->
+    {0 left : Node {rel} leftColor childHeight lower (Middle root)} ->
+    {0 right : Node {rel} rightColor childHeight (Middle root) upper} ->
     Elem key left ->
     Elem key (MkBlackNode root left right)
   InRightOfRed :
     StrictLinearOrder k rel =>
-    {key : k} ->
-    {left : Node {rel} Black childHeight lower (Middle root)} ->
-    {right : Node {rel} Black childHeight (Middle root) upper} ->
+    {0 key : k} ->
+    {0 left : Node {rel} Black childHeight lower (Middle root)} ->
+    {0 right : Node {rel} Black childHeight (Middle root) upper} ->
     Elem key right ->
     Elem key (MkRedNode root left right)
   InRightOfBlack :
     StrictLinearOrder k rel =>
-    {key : k} ->
-    {left : Node {rel} leftColor childHeight lower (Middle root)} ->
-    {right : Node {rel} rightColor childHeight (Middle root) upper} ->
+    {0 key : k} ->
+    {0 left : Node {rel} leftColor childHeight lower (Middle root)} ->
+    {0 right : Node {rel} rightColor childHeight (Middle root) upper} ->
     Elem key right ->
     Elem key (MkBlackNode root left right)
 
@@ -53,6 +53,7 @@ export
 ltNotElem :
   StrictLinearOrder k rel =>
   {key : k} ->
+  {lower, upper : Bound k} ->
   {node : Node {rel} color height lower upper} ->
   BoundedRel {rel} (Middle key) lower ->
   Not (Elem key node)
@@ -75,6 +76,7 @@ export
 gtNotElem :
   StrictLinearOrder k rel =>
   {key : k} ->
+  {lower, upper : Bound k} ->
   {node : Node {rel} color height lower upper} ->
   BoundedRel {rel} upper (Middle key) ->
   Not (Elem key node)
