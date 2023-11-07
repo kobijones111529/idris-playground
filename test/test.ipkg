@@ -4,8 +4,6 @@ authors = "Kobi Jones"
 
 depends = test
 
-modules = Lib
-
 main = Main
 executable = "test-test"
 sourcedir = "src"
