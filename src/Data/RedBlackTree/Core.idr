@@ -6,27 +6,6 @@ import public Decidable.Equality
 %default total
 
 public export
-data Bound ty = Bottom | Middle ty | Top
-
-public export
-data BoundedRel : {0 rel : ty -> ty -> Type} -> Bound ty -> Bound ty -> Type where
-  LTEBottomTop : BoundedRel Bottom Top
-  LTEBottom : {x : ty} -> BoundedRel Bottom (Middle x)
-  LTETop : {x : ty} -> BoundedRel (Middle x) Top
-  LTEMiddle : {0 rel : ty -> ty -> Type} -> {x, y : ty} -> rel x y -> BoundedRel {rel} (Middle x) (Middle y)
-
-export
-Asymmetric ty rel => Asymmetric (Bound ty) (BoundedRel {rel}) where
-  asymmetric (LTEMiddle yx) (LTEMiddle xy) = asymmetric {rel} xy yx
-
-export
-Transitive ty rel => Transitive (Bound ty) (BoundedRel {rel}) where
-  transitive {x = Bottom} {z = Middle z} _ _ = LTEBottom
-  transitive {x = Bottom} {z = Top} _ _ = LTEBottomTop
-  transitive (LTEMiddle xy) (LTEMiddle yz) = LTEMiddle $ transitive xy yz
-  transitive {x = Middle x} {z = Top} _ _ = LTETop
-
-public export
 data Color = Red | Black
 
 export
@@ -52,26 +31,26 @@ eqOrConnex x y = case x `decEq` y of
   No notEq => (No notEq ** connex {rel} notEq)
 
 public export
-data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : Bound k) -> Type where
+data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : k) -> Type where
   MkLeaf :
     StrictLinearOrder k rel =>
-    {0 lower, upper : Bound k} ->
-    {auto ltLowerUpper : BoundedRel {rel} lower upper} ->
+    {0 lower, upper : k} ->
+    {auto ltLowerUpper : rel lower upper} ->
     Node {rel} Black Z lower upper
   MkRedNode :
     StrictLinearOrder k rel =>
-    {0 lower, upper : Bound k} ->
+    {0 lower, upper : k} ->
     (key : k) ->
-    (left : Node {rel} Black childHeight lower (Middle key)) ->
-    (right : Node {rel} Black childHeight (Middle key) upper) ->
+    (left : Node {rel} Black childHeight lower key) ->
+    (right : Node {rel} Black childHeight key upper) ->
     Node {rel} Red childHeight lower upper
   MkBlackNode :
     StrictLinearOrder k rel =>
-    {0 lower, upper : Bound k} ->
+    {0 lower, upper : k} ->
     (key : k) ->
     {leftColor, rightColor : Color} ->
-    (left : Node {rel} leftColor childHeight lower (Middle key)) ->
-    (right : Node {rel} rightColor childHeight (Middle key) upper) ->
+    (left : Node {rel} leftColor childHeight lower key) ->
+    (right : Node {rel} rightColor childHeight key upper) ->
     Node {rel} Black (S childHeight) lower upper
 
 export
@@ -84,9 +63,9 @@ redToBlack (MkRedNode key left right) = MkBlackNode key left right
 export
 nodeBoundsRel :
   StrictLinearOrder k rel =>
-  {lower, upper : Bound k} ->
+  {lower, upper : k} ->
   Node {rel} color height lower upper ->
-  BoundedRel {rel} lower upper
+  rel lower upper
 nodeBoundsRel (MkLeaf {ltLowerUpper}) = ltLowerUpper
 nodeBoundsRel (MkRedNode key left right) =
   transitive (nodeBoundsRel left) (nodeBoundsRel right)

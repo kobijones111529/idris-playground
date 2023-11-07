@@ -9,7 +9,7 @@ export
 lookup :
   (StrictLinearOrder k rel, DecEq k) =>
   (key : k) ->
-  {lower, upper : Bound k} ->
+  {lower, upper : k} ->
   (node : Node {rel} color height lower upper) ->
   Dec (Elem key node)
 lookup key MkLeaf = No $ \case
@@ -26,12 +26,12 @@ lookup key (MkRedNode root left right) = case eqOrConnex {rel} key root of
     No notInLeft => No $ \case
       ThisRed => irreflexive {rel} lt
       InLeftOfRed inLeft => notInLeft inLeft
-      InRightOfRed inRight => ltNotElem (LTEMiddle lt) inRight
+      InRightOfRed inRight => ltNotElem lt inRight
   (No notEq ** Right gt) => case lookup key right of
     Yes inRight => Yes $ InRightOfRed inRight
     No notInRight => No $ \case
       ThisRed => irreflexive {rel} gt
-      InLeftOfRed inLeft => gtNotElem (LTEMiddle gt) inLeft
+      InLeftOfRed inLeft => gtNotElem gt inLeft
       InRightOfRed inRight => notInRight inRight
 lookup key (MkBlackNode root left right) = case eqOrConnex {rel} key root of
   (Yes eq ** ()) => Yes $ rewrite sym eq in ThisBlack
@@ -40,21 +40,21 @@ lookup key (MkBlackNode root left right) = case eqOrConnex {rel} key root of
     No notInLeft => No $ \case
       ThisBlack => irreflexive {rel} lt
       InLeftOfBlack inLeft => notInLeft inLeft
-      InRightOfBlack inRight => ltNotElem (LTEMiddle lt) inRight
+      InRightOfBlack inRight => ltNotElem lt inRight
   (No notEq ** Right gt) => case lookup key right of
     Yes inRight => Yes $ InRightOfBlack inRight
     No notInRight => No $ \case
       ThisBlack => irreflexive {rel} gt
-      InLeftOfBlack inLeft => gtNotElem (LTEMiddle gt) inLeft
+      InLeftOfBlack inLeft => gtNotElem gt inLeft
       InRightOfBlack inRight => notInRight inRight
 
 export
 insert :
   (StrictLinearOrder k rel, DecEq k) =>
   (newKey : k) ->
-  {0 lower, upper : Bound k} ->
-  {auto ltLowerKey : BoundedRel {rel} lower (Middle newKey)} ->
-  {auto ltKeyUpper : BoundedRel {rel} (Middle newKey) upper} ->
+  {0 lower, upper : k} ->
+  {auto ltLowerKey : rel lower newKey} ->
+  {auto ltKeyUpper : rel newKey upper} ->
   Node {rel} Black height lower upper ->
   (color ** Node {rel} color height lower upper)
 insert newKey MkLeaf = (Red ** MkRedNode newKey MkLeaf MkLeaf)
