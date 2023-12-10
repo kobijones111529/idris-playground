@@ -1,9 +1,9 @@
 module Main
 
-import Test.NCurses as NCurses
+import Test.Lexer as Lexer
 
 main : IO ()
-main = NCurses.main
+main = Lexer.main
 
 -- main : IO ()
 -- main = do
