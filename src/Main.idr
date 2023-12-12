@@ -1,9 +1,9 @@
 module Main
 
-import Test.Lexer as Lexer
+import Test.Game as Game
 
 main : IO ()
-main = Lexer.main
+main = Game.main
 
 -- main : IO ()
 -- main = do
