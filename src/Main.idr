@@ -1,9 +1,25 @@
 module Main
 
+import Data.Fuel
+import Data.Stream
 import Test.Lexer as Lexer
 
+%default total
+
+runStream : Fuel -> a -> Stream (a -> IO (Either b a)) -> IO (Either a b)
+runStream Dry acc (x :: _) =
+  pure $ case !(x acc) of
+    Left quitVal => Right quitVal
+    Right val => Left val
+runStream (More fuel) acc (x :: xs) =
+  case !(x acc) of
+    Left quitVal => pure $ Right quitVal
+    Right val => runStream fuel val xs
+
+covering
 main : IO ()
-main = Lexer.main
+main = do
+  ignore $ runStream forever () $ repeat $ const $ (\quit => if quit then Left () else Right ()) <$> Lexer.main
 
 -- main : IO ()
 -- main = do
