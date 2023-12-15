@@ -96,24 +96,6 @@ HasListView a Vect where
   view [] = Nil
   view (x :: xs) = x :: xs
 
--- strToLazyVect : (str : String) -> LazyVect (length str) Char
--- strToLazyVect str with (strM str)
---   strToLazyVect "" | StrNil = Nil
---   strToLazyVect str@(strCons c str') | StrCons _ _ =
---     rewrite strConsSuccLength {c} {str = str'}
---     in c :: strToLazyVect (assert_smaller str str')
-
--- strToLazyVect : (str : String) -> LazyVect (length str) Char
--- strToLazyVect str =
---   rewrite sym $ plusZeroRightNeutral (length str) in go (asVect str) []
---   where
---     lemma : LazyVect (m + S n) Char -> LazyVect (S (m + n)) Char
---     lemma xs = rewrite plusSuccRightSucc m n in xs
-
---     go : (AsVect str1 m) -> Lazy (LazyVect n Char) -> LazyVect (m + n) Char
---     go [] acc = acc
---     go (x :: xs) acc = lemma $ go xs (x :: acc)
-
 strToLazyVect : (str : String) -> LazyVect (length str) Char
 strToLazyVect str = go $ asVect str
   where
