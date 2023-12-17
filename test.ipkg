@@ -6,6 +6,7 @@ depends = contrib
         , indexed
         , linear
         , ncurses-idris
+        , network
 
 main = Main
 executable = "test"

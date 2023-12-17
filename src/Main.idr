@@ -3,6 +3,7 @@ module Main
 import Data.Fuel
 import Data.Stream
 import Test.Lexer as Lexer
+import Test.Http as Http
 
 %default total
 
@@ -18,8 +19,12 @@ runStream (More fuel) acc (x :: xs) =
 
 covering
 main : IO ()
-main = do
-  ignore $ runStream forever () $ repeat $ const $ (\quit => if quit then Left () else Right ()) <$> Lexer.main
+main = Http.main
+
+-- covering
+-- main : IO ()
+-- main = do
+--   ignore $ runStream forever () $ repeat $ const $ (\quit => if quit then Left () else Right ()) <$> Lexer.main
 
 -- main : IO ()
 -- main = do
