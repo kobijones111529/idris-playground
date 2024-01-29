@@ -2,6 +2,7 @@ module Main
 
 import Data.Fuel
 import Data.Stream
+import Data.String.Extra1
 import Test.Lexer as Lexer
 import Test.Http as Http
 

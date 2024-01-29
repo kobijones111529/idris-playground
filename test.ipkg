@@ -5,7 +5,6 @@ authors = "Kobi Jones"
 depends = contrib
         , indexed
         , linear
-        , ncurses-idris
         , network
 
 main = Main
