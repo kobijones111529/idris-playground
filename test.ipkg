@@ -1,4 +1,4 @@
-package test
+package playground
 version = 0.0.1
 authors = "Kobi Jones"
 
@@ -7,6 +7,20 @@ depends = contrib
         , linear
         , network
 
-main = Main
-executable = "test"
+modules = PushPullFRP
+        , PushPullFRP.SignalFunction
+        , PushPullFRP.SignalFunction.EvalT
+        , PushPullFRP.SignalFunction.SignalFunction
+        , PushPullFRP.SignalVector
+        , PushPullFRP.SignalVector.Delta
+        , PushPullFRP.SignalVector.EventInput
+        , PushPullFRP.SignalVector.Handler
+        , PushPullFRP.SignalVector.Occurrence
+        , PushPullFRP.SignalVector.Routable
+        , PushPullFRP.SignalVector.Sample
+        , PushPullFRP.SignalVector.SignalUpdate
+        , PushPullFRP.SignalVector.SignalVector
+
+--main = Main
+--executable = "test"
 sourcedir = "src"

@@ -1,10 +1,15 @@
-[custom.all.test]
+[custom.all.playground]
 type = "local"
 path = "."
 ipkg = "test.ipkg"
 test = "test/test.ipkg"
 
-[custom.all.test-test]
+[custom.all.playground-test]
 type = "local"
 path = "test"
 ipkg = "test.ipkg"
+
+[custom.all.push-pull-frp-example]
+type = "local"
+path = "examples/push-pull-frp"
+ipkg = "push-pull-frp.ipkg"
