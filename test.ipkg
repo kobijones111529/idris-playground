@@ -7,7 +7,8 @@ depends = contrib
         , linear
         , network
 
-modules = PushPullFRP
+modules = NCurses
+        , PushPullFRP
         , PushPullFRP.SignalFunction
         , PushPullFRP.SignalFunction.EvalT
         , PushPullFRP.SignalFunction.SignalFunction
@@ -21,6 +22,6 @@ modules = PushPullFRP
         , PushPullFRP.SignalVector.SignalUpdate
         , PushPullFRP.SignalVector.SignalVector
 
---main = Main
---executable = "test"
+main = Main
+executable = "test"
 sourcedir = "src"

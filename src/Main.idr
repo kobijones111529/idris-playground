@@ -5,6 +5,7 @@ import Data.Stream
 import Data.String.Extra1
 import Test.Lexer as Lexer
 import Test.Http as Http
+import Test.NCurses as NC
 
 %default total
 
@@ -18,9 +19,12 @@ runStream (More fuel) acc (x :: xs) =
     Left quitVal => pure $ Right quitVal
     Right val => runStream fuel val xs
 
-covering
+-- covering
+-- main : IO ()
+-- main = Http.main
+
 main : IO ()
-main = Http.main
+main = NC.main
 
 -- covering
 -- main : IO ()

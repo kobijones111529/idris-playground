@@ -93,3 +93,13 @@ timeInit t =
 export
 time : Empty :~> Signal Double
 time = MkSF $ \_ => (sample 0, timeInit 0)
+
+neverInit : SF Initialized Empty (Event a)
+neverInit =
+  SFInit
+    (\_, _ => (deltaNothing, [], neverInit))
+    (\_ => ([], neverInit))
+
+export
+never : Empty :~> Event a
+never = MkSF $ \_ => (sampleEvent, neverInit)
