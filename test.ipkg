@@ -7,7 +7,8 @@ depends = contrib
         , linear
         , network
 
-modules = NCurses
+modules = Data.RedBlackTree
+        , NCurses
         , PushPullFRP
         , PushPullFRP.SignalFunction
         , PushPullFRP.SignalFunction.EvalT

@@ -19,34 +19,36 @@ lookup key MkLeaf = No $ \case
   InLeftOfBlack _ impossible
   InRightOfRed _ impossible
   InRightOfBlack _ impossible
-lookup key (MkRedNode root left right) = case eqOrConnex {rel} key root of
-  (Yes eq ** ()) => Yes $ rewrite sym eq in ThisRed
-  (No notEq ** Left lt) => case lookup key left of
-    Yes inLeft => Yes $ InLeftOfRed inLeft
-    No notInLeft => No $ \case
-      ThisRed => irreflexive {rel} lt
-      InLeftOfRed inLeft => notInLeft inLeft
-      InRightOfRed inRight => ltNotElem lt inRight
-  (No notEq ** Right gt) => case lookup key right of
-    Yes inRight => Yes $ InRightOfRed inRight
-    No notInRight => No $ \case
-      ThisRed => irreflexive {rel} gt
-      InLeftOfRed inLeft => gtNotElem gt inLeft
-      InRightOfRed inRight => notInRight inRight
-lookup key (MkBlackNode root left right) = case eqOrConnex {rel} key root of
-  (Yes eq ** ()) => Yes $ rewrite sym eq in ThisBlack
-  (No notEq ** Left lt) => case lookup key left of
-    Yes inLeft => Yes $ InLeftOfBlack inLeft
-    No notInLeft => No $ \case
-      ThisBlack => irreflexive {rel} lt
-      InLeftOfBlack inLeft => notInLeft inLeft
-      InRightOfBlack inRight => ltNotElem lt inRight
-  (No notEq ** Right gt) => case lookup key right of
-    Yes inRight => Yes $ InRightOfBlack inRight
-    No notInRight => No $ \case
-      ThisBlack => irreflexive {rel} gt
-      InLeftOfBlack inLeft => gtNotElem gt inLeft
-      InRightOfBlack inRight => notInRight inRight
+lookup key (MkRedNode root left right) =
+  case decOrd {rel} key root of
+    EQ eq => Yes $ rewrite sym eq in ThisRed
+    LT lt => case lookup key left of
+      Yes inLeft => Yes $ InLeftOfRed inLeft
+      No notInLeft => No $ \case
+        ThisRed => irreflexive {rel} lt
+        InLeftOfRed inLeft => notInLeft inLeft
+        InRightOfRed inRight => ltNotElem lt inRight
+    GT gt => case lookup key right of
+      Yes inRight => Yes $ InRightOfRed inRight
+      No notInRight => No $ \case
+        ThisRed => irreflexive {rel} gt
+        InLeftOfRed inLeft => gtNotElem gt inLeft
+        InRightOfRed inRight => notInRight inRight
+lookup key (MkBlackNode root left right) =
+  case decOrd {rel} key root of
+    EQ eq => Yes $ rewrite sym eq in ThisBlack
+    LT lt => case lookup key left of
+      Yes inLeft => Yes $ InLeftOfBlack inLeft
+      No notInLeft => No $ \case
+        ThisBlack => irreflexive {rel} lt
+        InLeftOfBlack inLeft => notInLeft inLeft
+        InRightOfBlack inRight => ltNotElem lt inRight
+    GT gt => case lookup key right of
+      Yes inRight => Yes $ InRightOfBlack inRight
+      No notInRight => No $ \case
+        ThisBlack => irreflexive {rel} gt
+        InLeftOfBlack inLeft => gtNotElem gt inLeft
+        InRightOfBlack inRight => notInRight inRight
 
 export
 insert :
@@ -62,14 +64,14 @@ insert
   {height = S childHeight}
   newKey
   (MkBlackNode {childHeight} {leftColor} {rightColor} key left right) =
-  case eqOrConnex {rel} newKey key of
-    (Yes _ ** ()) => (Black ** MkBlackNode key left right)
-    (No notEq ** Left lt) => case leftColor of
+  case decOrd {rel} newKey key of
+    EQ _ => (Black ** MkBlackNode key left right)
+    LT _ => case leftColor of
       Red =>
         let MkRedNode leftKey leftLeft leftRight = left
-        in case eqOrConnex {rel} newKey leftKey of
-          (Yes _ ** ()) => (Black ** MkBlackNode key left right)
-          (No _ ** Left lt') => case insert newKey leftLeft of
+        in case decOrd {rel} newKey leftKey of
+          EQ _ => (Black ** MkBlackNode key left right)
+          LT _ => case insert newKey leftLeft of
             (Red ** leftLeft) => case rightColor of
               Red =>
                 (Red **
@@ -84,7 +86,7 @@ insert
                 )
             (Black ** leftLeft) =>
               (Black ** MkBlackNode key (MkRedNode leftKey leftLeft leftRight) right)
-          (No _ ** Right gt') => case insert newKey leftRight of
+          GT _ => case insert newKey leftRight of
             (Red ** leftRight@(MkRedNode leftRightKey leftRightLeft leftRightRight)) => case rightColor of
               Red =>
                 (Red **
@@ -104,12 +106,12 @@ insert
       Black => case insert newKey left of
         (Red ** left) => (Black ** MkBlackNode key left right)
         (Black ** left) => (Black ** MkBlackNode key left right)
-    (No notEq ** Right gt) => case rightColor of
+    GT gt => case rightColor of
       Red =>
         let MkRedNode rightKey rightLeft rightRight = right
-        in case eqOrConnex {rel} newKey rightKey of
-          (Yes _ ** ()) => (Black ** MkBlackNode key left right)
-          (No _ ** Left lt') => case insert newKey rightLeft of
+        in case decOrd {rel} newKey rightKey of
+          EQ _ => (Black ** MkBlackNode key left right)
+          LT _ => case insert newKey rightLeft of
             (Red ** rightLeft@(MkRedNode rightLeftKey rightLeftLeft rightLeftRight)) => case leftColor of
               Red =>
                 (Red **
@@ -126,7 +128,7 @@ insert
                     (MkRedNode rightKey rightLeftRight rightRight)
                 )
             (Black ** rightLeft) => (Black ** MkBlackNode key left (MkRedNode rightKey rightLeft rightRight))
-          (No _ ** Right gt') => case insert newKey rightRight of
+          GT _ => case insert newKey rightRight of
             (Red ** rightRight) => case leftColor of
               Red =>
                 (Red **

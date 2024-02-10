@@ -16,19 +16,21 @@ export
 Uninhabited (Black = Red) where
   uninhabited Refl impossible
 
-export
-eqOrConnex :
-  (Connex ty rel, DecEq ty) =>
-  (x : ty) ->
-  (y : ty) ->
-  (dec : Dec (x = y) **
-    case dec of
-      Yes _ => ()
-      No _ => Either (rel x y) (rel y x)
-  )
-eqOrConnex x y = case x `decEq` y of
-  Yes eq => (Yes eq ** ())
-  No notEq => (No notEq ** connex {rel} notEq)
+public export
+data DecOrd : Connex ty rel => (x, y : ty) -> Type where
+  LT : Connex ty rel => rel x y -> DecOrd {rel} x y
+  EQ : Connex ty rel => x = y -> DecOrd {rel} x y
+  GT : Connex ty rel => rel y x -> DecOrd {rel} x y
+
+public export
+decOrd : (Connex ty rel, DecEq ty) => (x, y : ty) -> DecOrd {rel} x y
+decOrd x y =
+  case x `decEq` y of
+    Yes prf => EQ prf
+    No contra =>
+      case connex {rel} contra of
+        Left prf => LT prf
+        Right prf => GT prf
 
 public export
 data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : k) -> Type where
