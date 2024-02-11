@@ -17,27 +17,11 @@ Uninhabited (Black = Red) where
   uninhabited Refl impossible
 
 public export
-data DecOrd : Connex ty rel => (x, y : ty) -> Type where
-  LT : Connex ty rel => rel x y -> DecOrd {rel} x y
-  EQ : Connex ty rel => x = y -> DecOrd {rel} x y
-  GT : Connex ty rel => rel y x -> DecOrd {rel} x y
-
-public export
-decOrd : (Connex ty rel, DecEq ty) => (x, y : ty) -> DecOrd {rel} x y
-decOrd x y =
-  case x `decEq` y of
-    Yes prf => EQ prf
-    No contra =>
-      case connex {rel} contra of
-        Left prf => LT prf
-        Right prf => GT prf
-
-public export
-data Node : StrictLinearOrder k rel => Color -> Nat -> (0 lower, upper : k) -> Type where
+data Node : StrictLinearOrder k rel => Color -> (height : Nat) -> (lower, upper : k) -> Type where
   MkLeaf :
     StrictLinearOrder k rel =>
     {0 lower, upper : k} ->
-    {auto ltLowerUpper : rel lower upper} ->
+    {auto 0 ltLowerUpper : rel lower upper} ->
     Node {rel} Black Z lower upper
   MkRedNode :
     StrictLinearOrder k rel =>
@@ -63,9 +47,9 @@ redToBlack :
 redToBlack (MkRedNode key left right) = MkBlackNode key left right
 
 export
-nodeBoundsRel :
+0 nodeBoundsRel :
   StrictLinearOrder k rel =>
-  {lower, upper : k} ->
+  {0 lower, upper : k} ->
   Node {rel} color height lower upper ->
   rel lower upper
 nodeBoundsRel (MkLeaf {ltLowerUpper}) = ltLowerUpper

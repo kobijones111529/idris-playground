@@ -7,7 +7,16 @@ depends = contrib
         , linear
         , network
 
-modules = Data.RedBlackTree
+modules = Control.Order.Strict
+        , Control.Relation.Erased
+        , Control.Relation.Asymmetric
+        , Control.Relation.Irreflexive
+        , Data.Nat.LT
+        , Data.RedBlackTree
+        , Data.RedBlackTree.Core
+        , Data.RedBlackTree.Elem
+        , Data.RedBlackTree.Ops
+        , Decidable.Ordering
         , NCurses
         , PushPullFRP
         , PushPullFRP.SignalFunction

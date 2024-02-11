@@ -1,4 +1,4 @@
-module Test.BST
+module Main
 
 import Data.List
 import Data.List.Elem
@@ -12,8 +12,8 @@ export
 main : IO ()
 main = do
   let
-    size = 1000
-  listBench (S size) size
+    size = 5000
+  -- listBench (S size) size
   treeBench (S size) size
   where
     listBench : Nat -> Nat -> IO ()
@@ -31,11 +31,11 @@ main = do
     treeBench size search = do
       startTime <- clockTime Monotonic
       let
-        tree : BinarySearchTree Nat LT := foldr (\el, acc => insert el acc) (empty {rel = LT}) (reverse [1..size])
+        tree : BinarySearchTree Nat LT := foldr (\el, acc => insert el acc) (empty {rel = LT}) ([1..size])
       endTime <- clockTime Monotonic
       putStrLn $ "Construction time: " ++ show (timeDifference endTime startTime)
       printLn . length . show @{ShowBST} $ tree
       startTime <- clockTime Monotonic
-      -- printLn $ lookup search tree
+      printLn $ lookup search tree
       endTime <- clockTime Monotonic
       putStrLn $ "Lookup time: " ++ show (timeDifference endTime startTime)

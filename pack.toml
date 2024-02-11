@@ -13,3 +13,8 @@ ipkg = "test.ipkg"
 type = "local"
 path = "examples/push-pull-frp"
 ipkg = "push-pull-frp.ipkg"
+
+[custom.all.red-black-tree-example]
+type = "local"
+path = "examples/red-black-tree"
+ipkg = "red-black-tree.ipkg"
