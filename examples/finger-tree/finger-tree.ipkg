@@ -1,0 +1,13 @@
+package finger-tree-example
+
+version = 0.0.1
+
+authors = "Kobi Jones"
+
+depends = playground
+
+sourcedir = "src"
+
+main = Main
+
+executable = red-black-tree

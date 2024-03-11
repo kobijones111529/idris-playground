@@ -9,6 +9,11 @@ type = "local"
 path = "test"
 ipkg = "test.ipkg"
 
+[custom.all.finger-tree-example]
+type = "local"
+path = "examples/finger-tree"
+ipkg = "finger-tree.ipkg"
+
 [custom.all.push-pull-frp-example]
 type = "local"
 path = "examples/push-pull-frp"

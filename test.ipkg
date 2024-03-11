@@ -11,6 +11,8 @@ modules = Control.Order.Strict
         , Control.Relation.Erased
         , Control.Relation.Asymmetric
         , Control.Relation.Irreflexive
+        , Data.FingerTree.Core
+        , Data.FingerTree.Ops
         , Data.Nat.LT
         , Data.RedBlackTree
         , Data.RedBlackTree.Core
